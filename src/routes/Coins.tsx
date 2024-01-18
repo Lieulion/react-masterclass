@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { fetchCoins } from "../api";
 
@@ -24,6 +24,7 @@ const Coin = styled.li`
   color: ${(props) => props.theme.bgColor};
   border-radius: 15px;
   margin-bottom: 10px;
+  margin-top: 10px;
   a {
     display: flex;
     align-items: center;
@@ -66,7 +67,6 @@ interface ICoin {
 function Coins() {
   //useQuery hook은 FetcherFunction을 부르고, fetcher함수가loading이라면 알려줌
   //React Query가 fetcher함수를 끝내면 data에 json을 넣을것.
-  const { isLoading, data } = useQuery<ICoin[]>("allCoins", fetchCoins); //Query key 및 Fetcher Fucntion 필요
   /* react Query를 위해 주석처리
   const [coins, setCoins] = useState<CoinInterface[]>([]);
   const [loading, setLoading] = useState(true);
@@ -79,6 +79,8 @@ function Coins() {
       setLoading(false);
     })();
   }, []); */
+  const { isLoading, data } = useQuery<ICoin[]>("allCoins", fetchCoins);
+
   return (
     <Container>
       <Header>
@@ -97,8 +99,7 @@ function Coins() {
                 }}
               >
                 <Img
-                  src={`https://static.coinpaprika.com/coin/${coin.id}/logo.png
-                  `}
+                  src={`https://static.coinpaprika.com/coin/${coin.id}/logo.png`}
                 />
                 {coin.name} &rarr;
               </Link>

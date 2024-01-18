@@ -10,6 +10,8 @@ import {
 import styled from "styled-components";
 import Chart from "./Chart";
 import Price from "./Price";
+import { fetchCoinInfo, fetchCoinTickers } from "../api";
+import { useQuery } from "react-query";
 
 const Title = styled.h1`
   font-size: 48px;
@@ -40,6 +42,7 @@ const Overview = styled.div`
   background-color: rgba(0, 0, 0, 0.5);
   padding: 10px 20px;
   border-radius: 10px;
+  margin-top: 20px;
 `;
 const OverviewItem = styled.div`
   display: flex;
@@ -143,16 +146,28 @@ interface PriceData {
 }
 
 function Coin() {
-  const [loading, setLoading] = useState(true);
   //const {coinId, setCoinId} = useParams<coinId:string>();
   //useParams URL에서 관심있는 정보를 잡아낼 수 있게 해줌
   const { coinId } = useParams<RouteParams>();
   //state에 있는 name을 가져오기 위해 useLocation 사용
   const { state } = useLocation<RouteState>();
-  const [info, setInfo] = useState<InfoData>();
-  const [priceInfo, setPriceInfo] = useState<PriceData>();
   const priceMatch = useRouteMatch("/:coinId/price");
   const chartMatch = useRouteMatch("/:coinId/chart");
+  //Key와 data 의 이름이 같으면 안되기 때문에 이름을 정해줌.
+  const { isLoading: infoLoading, data: infoData } = useQuery<InfoData>(
+    ["info", coinId],
+    () => fetchCoinInfo(coinId)
+  );
+  const { isLoading: tickerLoading, data: tickersData } = useQuery<PriceData>(
+    ["tickers", coinId],
+    () => fetchCoinTickers(coinId)
+  );
+
+  /* react Query로 사용하기 위해 주석처리 api.ts로 감
+  const [loading, setLoading] = useState(true);
+  const [info, setInfo] = useState<InfoData>();
+  const [priceInfo, setPriceInfo] = useState<PriceData>();
+
   //컴포넌트가 생성될 때 한번만 코드를 실행하기 위해 useEffect 사용
   useEffect(() => {
     (async () => {
@@ -166,12 +181,13 @@ function Coin() {
       setPriceInfo(priceData);
       setLoading(false);
     })();
-  }, [coinId]);
+  }, [coinId]); */
+  const loading = infoLoading || tickerLoading;
   return (
     <Container>
       <Header>
         <Title>
-          {state?.name ? state.name : loading ? "Loading..." : info?.name}
+          {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
         </Title>
       </Header>
       {loading ? (
@@ -181,26 +197,26 @@ function Coin() {
           <Overview>
             <OverviewItem>
               <span>Rank:</span>
-              <span>{info?.rank}</span>
+              <span>{infoData?.rank}</span>
             </OverviewItem>
             <OverviewItem>
               <span>Symbol:</span>
-              <span>${info?.symbol}</span>
+              <span>${infoData?.symbol}</span>
             </OverviewItem>
             <OverviewItem>
               <span>Open Source:</span>
-              <span>{info?.open_source ? "Yes" : "No"}</span>
+              <span>{infoData?.open_source ? "Yes" : "No"}</span>
             </OverviewItem>
           </Overview>
-          <Description>{info?.description}</Description>
+          <Description>{infoData?.description}</Description>
           <Overview>
             <OverviewItem>
               <span>Total Suply:</span>
-              <span>{priceInfo?.total_supply}</span>
+              <span>{tickersData?.total_supply}</span>
             </OverviewItem>
             <OverviewItem>
               <span>Max Supply:</span>
-              <span>{priceInfo?.max_supply}</span>
+              <span>{tickersData?.max_supply}</span>
             </OverviewItem>
           </Overview>
 
