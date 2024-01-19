@@ -16,8 +16,12 @@ interface ChartProps {
   coinId: string;
 }
 function Chart({ coinId }: ChartProps) {
-  const { isLoading, data } = useQuery<IHistorical[]>(["ohlcv", coinId], () =>
-    fetchCoinHistory(coinId)
+  const { isLoading, data } = useQuery<IHistorical[]>(
+    ["ohlcv", coinId],
+    () => fetchCoinHistory(coinId),
+    {
+      //refetchInterval: 10000,
+    }
   );
   return (
     <div>
@@ -49,13 +53,17 @@ function Chart({ coinId }: ChartProps) {
               background: "transparent",
             },
             xaxis: {
-              categories: data?.map((date) => {
-                const time = new Date(date.time_close * 1000);
-                return time.toLocaleDateString();
-              }),
+              // categories: data?.map((date) => {
+              //   const time = new Date(date.time_close * 1000);
+              //   return time.toLocaleDateString();
+              // }),
+              categories: data?.map((price) =>
+                new Date(price.time_close * 1000).toUTCString()
+              ),
               axisBorder: { show: true },
               axisTicks: { show: true },
-              labels: { show: true },
+              labels: { show: false },
+              type: "datetime",
             },
             grid: {
               show: true,
@@ -63,6 +71,17 @@ function Chart({ coinId }: ChartProps) {
             stroke: {
               curve: "smooth",
               width: 4,
+            },
+            fill: {
+              type: "gradient",
+              gradient: { gradientToColors: ["#0be881"], stops: [0, 100] },
+              colors: ["#0fbcf9"],
+            },
+            tooltip: {
+              y: {
+                formatter: (value) => `$ ${value?.toFixed(3)}`,
+                //값을 소숫점 셋째자리 까지
+              },
             },
           }}
         />
