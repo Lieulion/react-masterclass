@@ -22,7 +22,7 @@ const CoinsList = styled.ul``;
 
 const Coin = styled.li`
   background-color: white;
-  color: ${(props) => props.theme.bgColor};
+  color: ${(props) => props.theme.textColor};
   border-radius: 15px;
   margin-bottom: 10px;
   margin-top: 10px;
@@ -64,8 +64,10 @@ interface ICoin {
   is_active: boolean;
   type: string;
 }
-
-function Coins() {
+interface ICoinsProps {
+  toggleDark: () => void;
+}
+function Coins({ toggleDark }: ICoinsProps) {
   //useQuery hook은 FetcherFunction을 부르고, fetcher함수가loading이라면 알려줌
   //React Query가 fetcher함수를 끝내면 data에 json을 넣을것.
   /* react Query를 위해 주석처리
@@ -89,6 +91,7 @@ function Coins() {
           <title>코인</title>
         </Helmet>
         <Title>코인</Title>
+        <button onClick={toggleDark}>Toggle Dark Mode</button>
       </Header>
       {isLoading ? (
         <Loader>Loading...</Loader>
