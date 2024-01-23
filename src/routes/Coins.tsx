@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { fetchCoins } from "../api";
 import { Helmet } from "react-helmet";
+import { useSetRecoilState } from "recoil";
+import { isDarkAtom } from "./atoms";
 
 const Container = styled.div`
   padding: 0px 20px;
@@ -64,10 +66,8 @@ interface ICoin {
   is_active: boolean;
   type: string;
 }
-interface ICoinsProps {
-  toggleDark: () => void;
-}
-function Coins({ toggleDark }: ICoinsProps) {
+interface ICoinsProps {}
+function Coins() {
   //useQuery hook은 FetcherFunction을 부르고, fetcher함수가loading이라면 알려줌
   //React Query가 fetcher함수를 끝내면 data에 json을 넣을것.
   /* react Query를 위해 주석처리
@@ -83,6 +83,9 @@ function Coins({ toggleDark }: ICoinsProps) {
     })();
   }, []); */
   const { isLoading, data } = useQuery<ICoin[]>("allCoins", fetchCoins);
+  //매개변수로 Atomdmf qkerh, atom을변경하는 함수를 반환함
+  const setDarkAtom = useSetRecoilState(isDarkAtom);
+  const toggleDarkAtom = () => setDarkAtom((prev) => !prev);
 
   return (
     <Container>
@@ -91,7 +94,7 @@ function Coins({ toggleDark }: ICoinsProps) {
           <title>코인</title>
         </Helmet>
         <Title>코인</Title>
-        <button onClick={toggleDark}>Toggle Dark Mode</button>
+        <button onClick={toggleDarkAtom}>Toggle Mode</button>
       </Header>
       {isLoading ? (
         <Loader>Loading...</Loader>
