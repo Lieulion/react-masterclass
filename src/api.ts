@@ -22,3 +22,8 @@ export function fetchCoinHistory(coinId: string) {
     response.json()
   );
 }
+export const fetchPrice = (coinId: string) => {
+  return fetch(`${BASE_URL}/tickers/${coinId}`).then((response) =>
+    response.json()
+  );
+};
